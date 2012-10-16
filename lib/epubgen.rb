@@ -17,7 +17,10 @@ class Epubgen
     @identifier = book_identifier
 
     @metadata = load_metadata
+    @metadata[:identifier] = @identifier
     @ignore_filenames = ignore_filenames
+    @toc = create_toc
+    p @toc
   end
 
   def create
@@ -38,9 +41,11 @@ class Epubgen
       end
     end
 
+    toc = create_xml('templates/toc.ncx.builder')
     container = create_xml('templates/container.xml.builder')
     content = create_xml('templates/content.opf.builder')
     mimetype = open('templates/mimetype').read
+    f = open(tmp_dir+File::SEPARATOR+'toc.ncx', 'w'); f.print(toc); f.close
     f = open(tmp_dir+File::SEPARATOR+'container.xml', 'w'); f.print(container); f.close
     f = open(tmp_dir+File::SEPARATOR+'content.opf', 'w'); f.print(content); f.close
     f = open(tmp_dir+File::SEPARATOR+'mimetype', 'w'); f.print(mimetype); f.close
@@ -63,6 +68,7 @@ class Epubgen
       archive.add_dir('META-INF')
       archive.add_file('META-INF/container.xml', tmp_path+File::SEPARATOR+'container.xml')
       archive.add_file(tmp_path+File::SEPARATOR+'content.opf')
+      archive.add_file(tmp_path+File::SEPARATOR+'toc.ncx')
 
       archive.add_dir('data')
       Dir::entries(tmp_data_dir).each do |filename|
@@ -124,5 +130,10 @@ class Epubgen
 
   def book_identifier
     Digest::SHA1.hexdigest(@input+Time.now.to_s)
+  end
+
+  def create_toc
+    file = @input+File::SEPARATOR+'toc.yml'
+    YAML.load_file(file)
   end
 end

@@ -17,6 +17,7 @@ xml.package :version=>'2.0', :xmlns=>'http://www.idpf.org/2007/opf', :'unique-id
     end
   end
   xml.manifest do
+    xml.item :id=>'ncx', :href=>'toc.ncx', :'media-type'=>'application/x-dtbncx+xml'
     Dir::entries(tmp_data_dir).each do |filename|
       next unless @ignore_filenames.index(filename).nil?
 
@@ -25,10 +26,9 @@ xml.package :version=>'2.0', :xmlns=>'http://www.idpf.org/2007/opf', :'unique-id
     end
   end
   xml.spine :toc=>'ncx' do
-    Dir::entries(tmp_data_dir).each do |filename|
-      next unless @ignore_filenames.index(filename).nil?
-
-      xml.itemref :idref=>filename
+    toc_path = @input+File::SEPARATOR+'toc.yml'
+    YAML.load_file(toc_path).each do |item|
+      xml.itemref :idref=>item['ref']
     end
   end
 end
