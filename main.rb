@@ -2,7 +2,7 @@
 
 require './lib/epubgen'
 
-TARGET_DIR = './data'
+TARGET_DIR = './target'
 OUT_DIR = './tmp'
 
 e = Epubgen.new(TARGET_DIR, OUT_DIR)
