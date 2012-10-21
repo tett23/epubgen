@@ -2,7 +2,7 @@
 
 require './lib/epubgen'
 
-TARGET_DIR = './spec/target'
+TARGET_DIR = './spec/sample/snedronningen'
 OUT_DIR = ''
 
 describe Epubgen do

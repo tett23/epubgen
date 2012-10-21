@@ -2,7 +2,7 @@
 
 require './lib/asset_compiler'
 
-TARGET_DIR = './spec/target'
+TARGET_DIR = './spec/sample/snedronningen'
 OUT_DIR = './spec/tmp'
 
 class DummyClass
