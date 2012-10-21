@@ -17,4 +17,7 @@ describe Helper do
   it 'join_pathに引数を与えない場合' do
     @helper.join_path().should == ''
   end
+  it '特異メソッドとしてjoin_pathを呼び出す' do
+    Helper.join_path('a', 'b').should == 'a/b'
+  end
 end
