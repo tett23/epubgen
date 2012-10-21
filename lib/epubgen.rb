@@ -7,9 +7,12 @@ require 'haml'
 require 'zipruby'
 require 'digest/sha1'
 
+require './lib/asset_compiler'
+
 class Epubgen
-  TEMPLATE_DIR = './templates'
   TMP_DIR = './tmp'
+
+  include AssetCompiler
 
   def initialize(input, output)
     @input = input
@@ -20,7 +23,6 @@ class Epubgen
     @metadata[:identifier] = @identifier
     @ignore_filenames = ignore_filenames
     @toc = create_toc
-    p @toc
   end
 
   def create
@@ -32,18 +34,16 @@ class Epubgen
     Dir::entries(@input+File::SEPARATOR+'data').each do |filename|
       next unless @ignore_filenames.index(filename).nil?
 
-      if File.extname(filename) == '.textile'
-        html = parse_textile(input_data_dir+File::SEPARATOR+filename)
-        basename = File.basename(filename, '.*')
-        Dir::mkdir(tmp_data_dir) unless Dir::exists?(tmp_data_dir)
-
-        f = open(tmp_data_dir+File::SEPARATOR+basename+'.html', 'w'); f.print(html); f.close
-      end
+      in_file_path = input_data_dir+File::SEPARATOR+filename
+      basename = File.basename(filename, '.*')
+      Dir::mkdir(tmp_data_dir) unless Dir::exists?(tmp_data_dir)
+      out_file_path = tmp_data_dir+File::SEPARATOR+basename+'.html'
+      compile_and_save(in_file_path, out_file_path)
     end
 
-    toc = create_xml('templates/toc.ncx.builder')
-    container = create_xml('templates/container.xml.builder')
-    content = create_xml('templates/content.opf.builder')
+    toc = compile('templates/toc.ncx.builder')
+    container = compile('templates/container.xml.builder')
+    content = compile('templates/content.opf.builder')
     mimetype = open('templates/mimetype').read
     f = open(tmp_dir+File::SEPARATOR+'toc.ncx', 'w'); f.print(toc); f.close
     f = open(tmp_dir+File::SEPARATOR+'container.xml', 'w'); f.print(container); f.close
@@ -81,33 +81,11 @@ class Epubgen
   end
 
   private
-  def create_xml(template_path)
-    template = open(template_path).read
-    out = ''
-    xml = Builder::XmlMarkup.new(:target=>out)
-
-    lambda { |xml, template|
-      instance_eval(template)
-
-      xml
-    }.call(xml, template)
-
-    out
-  end
-
   def ignore_filenames
     [
       '.',
       '..'
     ]
-  end
-
-  def parse_textile(path)
-    text = open(path).read
-    template = open('./templates/template.haml').read
-    body = RedCloth.new(text).to_html
-
-    Haml::Engine.new(template).render(Object.new, :body=>body)
   end
 
   def disporse_tmp_dir(tmp_path)
