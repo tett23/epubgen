@@ -101,7 +101,7 @@ class Epubgen
       next unless @ignore_filenames.index(filename).nil?
       if File::directory?(path)
         archive.add_dir(filename)
-        add_archive(archive, path, filename)
+        add_archive(archive, path, dir+'/'+filename)
       else
         zip_path = [dir, filename].reject {|f| f.nil? || f==''}.join('/')
         archive.add_buffer(zip_path, open(path).read)
