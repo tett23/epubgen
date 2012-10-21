@@ -48,7 +48,7 @@ module AssetCompiler
     when :css, :sass
       return :css
     else
-      return nil
+      return name
     end
   end
 

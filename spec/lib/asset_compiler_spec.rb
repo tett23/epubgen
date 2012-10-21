@@ -37,7 +37,7 @@ describe AssetCompiler do
   end
 
   describe '拡張子判定' do
-    context '拡張子名を判定したい' do
+    context '入力された拡張子名を判定したい' do
       it 'textileの判定' do
         @asset_compiler.extname('hoge.textile').should == 'textile'
       end
@@ -84,10 +84,10 @@ describe AssetCompiler do
         it 'cssの場合' do @asset_compiler.out_extname(:css).should == :css end
         it 'sassの場合' do @asset_compiler.out_extname(:sass).should == :css end
       end
-      context 'コンパイルしないやつ' do
+      context 'コンパイルしないやつはそのままの名前' do
         # というよりこの中はそのうち対応したいので対応後にコンパイルできなかったらアウト
-        it 'xhtmlとか' do @asset_compiler.out_extname(:xhtml).should == nil end
-        it 'scssとか' do @asset_compiler.out_extname(:scss).should == nil end
+        it 'xhtmlとか' do @asset_compiler.out_extname(:xhtml).should == :xhtml end
+        it 'scssとか' do @asset_compiler.out_extname(:scss).should == :scss end
       end
     end
   end
