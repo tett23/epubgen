@@ -15,7 +15,7 @@ class Epubgen
   include AssetCompiler
 
   def initialize(input, output)
-    @input = input.match(/\/$/).nil? ? input+'/' : input
+    @input = input.match(/#{File::SEPARATOR}$/).nil? ? input+File::SEPARATOR : input
     @output = output
     @identifier = book_identifier
 
