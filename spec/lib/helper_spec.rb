@@ -20,4 +20,7 @@ describe Helper do
   it '特異メソッドとしてjoin_pathを呼び出す' do
     Helper.join_path('a', 'b').should == 'a/b'
   end
+  it '空文字列やnilを含む' do
+    Helper.join_path('a', '', 'b', nil).should == 'a/b'
+  end
 end
