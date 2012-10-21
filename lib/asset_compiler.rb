@@ -65,7 +65,9 @@ module AssetCompiler
   end
 
   private
-  def read_file(filename)
+  def read_file(filename, options={})
+    return open(filename, 'rb').read if options[:binary]
+
     open(filename).read
   end
 
@@ -117,7 +119,7 @@ module AssetCompiler
   end
 
   def through(filename, options={}, &after)
-    text = read_file(filename)
+    text = read_file(filename, :binary=>true)
 
     after.call(options) unless after.nil?
   end
