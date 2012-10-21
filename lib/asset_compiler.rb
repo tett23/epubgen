@@ -89,8 +89,13 @@ module AssetCompiler
     body = RedCloth.new(text).to_html
     template_path = options[:template]
 
-    template_path = TEMPLATE_DIR+File::SEPARATOR+'template.haml' if template_path.nil?
-    template_path = nil unless File.exists?(template_path)
+    user_template = @input+'template.haml'
+    if File.exists?(user_template)
+      template_path = user_template
+    else
+      template_path = TEMPLATE_DIR+File::SEPARATOR+'template.haml' if template_path.nil?
+      template_path = nil unless File.exists?(template_path)
+    end
 
     template_path.nil? ? body : compile(template_path, :body=>body)
   end
