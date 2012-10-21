@@ -1,5 +1,6 @@
 # coding: utf-8
 
+require './lib/helper'
 require './lib/asset_compiler'
 
 TARGET_DIR = './spec/sample/snedronningen'
@@ -16,7 +17,7 @@ describe AssetCompiler do
   before do
     @asset_compiler = DummyClass.new(TARGET_DIR, OUT_DIR)
     AssetCompiler.class_eval {remove_const(:TEMPLATE_DIR)}
-    AssetCompiler.const_set(:TEMPLATE_DIR, './spec/templates')
+    AssetCompiler.const_set(:TEMPLATE_DIR, Helper.join_path('.', 'spec', 'templates'))
     @asset_compiler.extend(AssetCompiler)
   end
 
@@ -26,13 +27,13 @@ describe AssetCompiler do
 
   context 'ファイル名取得' do
     it '絶対パスの場合' do
-      @asset_compiler.basename('/absolute/path/hoge.html').should == 'hoge'
+      @asset_compiler.basename(Helper.join_path('/', 'absolute', 'path' , 'hoge.html')).should == 'hoge'
     end
     it '相対パスの場合1' do
       @asset_compiler.basename('hoge.html').should == 'hoge'
     end
     it '相対パスの場合' do
-      @asset_compiler.basename('relative/hoge.html').should == 'hoge'
+      @asset_compiler.basename(Helper.join_path('relative', 'hoge.html')).should == 'hoge'
     end
   end
 

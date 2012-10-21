@@ -21,10 +21,10 @@ describe Epubgen do
       @epubgen.disporse
     end
 
-    it 'mimetypeが存在するか' do File.exists?(@tmp+File::SEPARATOR+'mimetype') end
-    it 'toc.ncxが存在するか' do File.exists?(@tmp+File::SEPARATOR+'toc.ncx') end
-    it 'content.opfが存在するか' do File.exists?(@tmp+File::SEPARATOR+'content.opf') end
-    it 'container.xmlが存在するか' do File.exists?(@tmp+File::SEPARATOR+'container.xml') end
-    it 'dataディレクトリが存在するか' do Dir::exists?(@tmp+File::SEPARATOR+'data') end
+    it 'mimetypeが存在するか' do File.exists?(Helper.join_path(@tmp, 'mimetype')) end
+    it 'toc.ncxが存在するか' do File.exists?(Helper.join_path(@tmp, 'toc.ncx')) end
+    it 'content.opfが存在するか' do File.exists?(Helper.join_path(@tmp, 'content.opf')) end
+    it 'container.xmlが存在するか' do File.exists?(Helper.join_path(@tmp, 'container.xml')) end
+    it 'dataディレクトリが存在するか' do Dir::exists?(Helper.join_path(@tmp, 'data')) end
   end
 end
