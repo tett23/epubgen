@@ -1,6 +1,7 @@
 # coding: utf-8
 require 'haml'
 require 'redcloth'
+require 'sass'
 
 module AssetCompiler
   TEMPLATE_DIR = './templates'
@@ -35,6 +36,32 @@ module AssetCompiler
     end
 
     processor
+  end
+
+  def out_extname(name)
+    name = name.to_sym
+    case name
+    when :html, :textile, :markdown, :md, :haml
+      return :html
+    when :xml, :builder
+      return :xml
+    when :css, :sass
+      return :css
+    else
+      return nil
+    end
+  end
+
+  def basename(filename)
+    File.basename(filename, '.*')
+  end
+
+  def extname(filename)
+    ext = File.extname(filename)
+
+    ext.gsub!(/^./, '') if ext =~ /^\./
+
+    ext
   end
 
   private
@@ -75,8 +102,8 @@ module AssetCompiler
   end
 
   def sass(filename, options={}, &after)
-    read_file(filename)
-
+    text = read_file(filename)
+    Sass::Engine.new(text).render
   end
 
   def markdown(filename, options={}, &after)
@@ -88,13 +115,5 @@ module AssetCompiler
     text = read_file(filename)
 
     after.call(options)
-  end
-
-  def extname(filename)
-    ext = File.extname(filename)
-
-    ext.gsub!(/^./, '') if ext =~ /^\./
-
-    ext
   end
 end
