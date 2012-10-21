@@ -119,6 +119,6 @@ module AssetCompiler
   def through(filename, options={}, &after)
     text = read_file(filename)
 
-    after.call(options)
+    after.call(options) unless after.nil?
   end
 end
