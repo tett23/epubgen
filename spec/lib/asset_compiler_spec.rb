@@ -25,6 +25,14 @@ describe AssetCompiler do
   #  @asset_compiler.send(:textile, './spec/target/data/sec_1.textile')
   #end
 
+  it 'data_pathにdata以下を想定した相対パスを与える' do
+    @asset_compiler.send(:data_path, 'images/hogehoge').should == 'images/hogehoge'
+  end
+  it 'data_pathに絶対パスを与える' do
+    real_path = File.expand_path(Helper.join_path(TARGET_DIR, 'data', 'sec_1.textile'))
+    @asset_compiler.send(:data_path, real_path).should == 'sec_1.textile'
+  end
+
   context 'ファイル名取得' do
     it '絶対パスの場合' do
       @asset_compiler.basename(Helper.join_path('/', 'absolute', 'path' , 'hoge.html')).should == 'hoge'

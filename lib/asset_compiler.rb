@@ -14,6 +14,11 @@ module AssetCompiler
 
   def compile_and_save(input_path, output_path, options={}, &after)
     body = compile(input_path, options, &after)
+
+    output_path = File.expand_path(output_path)
+    out_dir = File.dirname(output_path)
+    Dir::mkdir(out_dir) unless Dir.exists?(out_dir)
+
     f = open(output_path, 'w'); f.print(body); f.close;
   end
 
@@ -122,5 +127,13 @@ module AssetCompiler
     text = read_file(filename, :binary=>true)
 
     after.call(options) unless after.nil?
+  end
+
+  def data_path(path)
+    input = Helper.join_path(File.expand_path(@input), 'data')
+    fullpath = File.expand_path(path)
+
+    fullpath = Helper.join_path(input, path) if fullpath.match(/^#{input}/).nil?
+    fullpath.gsub(input+'/', '')
   end
 end

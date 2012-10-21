@@ -7,17 +7,21 @@ require 'haml'
 require 'zipruby'
 require 'digest/sha1'
 
+require './lib/helper'
 require './lib/asset_compiler'
 
 class Epubgen
   TMP_DIR = './tmp'
 
+  include Helper
   include AssetCompiler
 
   def initialize(input, output)
     @input = input.match(/#{File::SEPARATOR}$/).nil? ? input+File::SEPARATOR : input
     @output = output
     @identifier = book_identifier
+    @tmp_path = tmp_path
+    @tmp_data_path = tmp_data_path
 
     @metadata = load_metadata
     @metadata[:identifier] = @identifier
@@ -28,44 +32,32 @@ class Epubgen
 
   def create
     input_data_dir = @input+File::SEPARATOR+'data'
-    tmp_dir = Epubgen::TMP_DIR+File::SEPARATOR+@identifier
-    tmp_data_dir = tmp_dir+File::SEPARATOR+'data'
 
-    Dir::mkdir(tmp_dir) unless Dir::exists?(tmp_dir)
-    Dir::mkdir(tmp_data_dir) unless Dir::exists?(tmp_data_dir)
-    input_path = File.expand_path(@input)+File::SEPARATOR+'data'
-    tmp_data_dir = File.expand_path(tmp_dir+File::SEPARATOR+'data')
+    Dir::mkdir(@tmp_path) unless Dir::exists?(@tmp_path)
+    Dir::mkdir(@tmp_data_path) unless Dir::exists?(@tmp_data_path)
 
-    convert('', input_path, tmp_data_dir)
+    convert(input_data_dir)
 
-    toc = compile('templates/toc.ncx.builder')
-    container = compile('templates/container.xml.builder')
-    content = compile('templates/content.opf.builder')
-    mimetype = open('templates/mimetype').read
-    f = open(tmp_dir+File::SEPARATOR+'toc.ncx', 'w'); f.print(toc); f.close
-    f = open(tmp_dir+File::SEPARATOR+'container.xml', 'w'); f.print(container); f.close
-    f = open(tmp_dir+File::SEPARATOR+'content.opf', 'w'); f.print(content); f.close
-    f = open(tmp_dir+File::SEPARATOR+'mimetype', 'w'); f.print(mimetype); f.close
+    compile_and_save('templates/toc.ncx.builder', join_path(@tmp_path, 'toc.ncx'))
+    compile_and_save('templates/container.xml.builder', join_path(@tmp_path, 'container.xml'))
+    compile_and_save('templates/mimetype', join_path(@tmp_path, 'mimetype'))
+    compile_and_save('templates/content.opf.builder', join_path(@tmp_path, 'content.opf'))
   end
 
-  def convert(path, input_path, tmp_path)
+  def convert(input_path)
     Dir::entries(input_path).each do |t|
       next unless @ignore_filenames.index(t).nil?
+      real_path = File.expand_path(join_path(input_path, t))
 
-      real_path = ([input_path, t].reject {|v| v.nil? || v==''}).join(File::SEPARATOR)
-
-      if Dir::exists?(real_path)
-        path = [path, t].join(File::SEPARATOR)
-        tmp_path = [tmp_path, t].join(File::SEPARATOR)
-
-        convert(path, real_path, tmp_path)
+      if File::directory?(real_path)
+        convert(real_path)
       else
-        Dir::mkdir(tmp_path) unless Dir::exists?(tmp_path)
-
-        out_path = [tmp_path, t].reject {|v| v.nil? || v==''}.join(File::SEPARATOR)
+        out_path = join_path(@tmp_data_path, data_path(real_path))
         ext = extname(out_path)
         out_path = out_path.gsub(/\.#{ext}$/, '.'+out_extname(ext).to_s)
+        out_dir = File.dirname(out_path)
 
+        Dir::mkdir(out_dir) unless Dir.exists?(out_dir)
         compile_and_save(real_path, out_path)
       end
     end
@@ -137,6 +129,15 @@ class Epubgen
   def book_identifier
     Digest::SHA1.hexdigest(@input+Time.now.to_s)
   end
+
+  def tmp_path
+    join_path(Epubgen::TMP_DIR, @identifier)
+  end
+
+  def tmp_data_path
+    join_path(tmp_path, 'data')
+  end
+
 
   def create_toc
     file = @input+File::SEPARATOR+'toc.yml'
