@@ -93,7 +93,7 @@ module AssetCompiler
     if File.exists?(user_template)
       template_path = user_template
     else
-      template_path = TEMPLATE_DIR+File::SEPARATOR+'template.haml' if template_path.nil?
+      template_path = AssetCompiler::TEMPLATE_DIR+File::SEPARATOR+'template.haml' if template_path.nil?
       template_path = nil unless File.exists?(template_path)
     end
 
