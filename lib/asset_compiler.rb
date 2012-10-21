@@ -19,7 +19,8 @@ module AssetCompiler
     out_dir = File.dirname(output_path)
     Dir::mkdir(out_dir) unless Dir.exists?(out_dir)
 
-    f = open(output_path, 'w'); f.print(body); f.close;
+    open_flag = binary?(input_path) ? 'wb' : 'w'
+    f = open(output_path, open_flag); f.print(body); f.close;
   end
 
   def router(filename)
@@ -124,9 +125,16 @@ module AssetCompiler
   end
 
   def through(filename, options={}, &after)
-    text = read_file(filename, :binary=>true)
+    text = read_file(filename, :binary=>binary?(filename))
 
     after.call(options) unless after.nil?
+
+    text
+  end
+
+  def binary?(filename)
+    s = File.read(filename, 1024)
+    s.count("^ -~\t\r\n").fdiv(s.size) > 0.3 || s.index("\x00") unless s.empty?
   end
 
   def data_path(path)
