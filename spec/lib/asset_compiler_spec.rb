@@ -33,6 +33,15 @@ describe AssetCompiler do
     @asset_compiler.send(:data_path, real_path).should == 'sec_1.textile'
   end
 
+  it 'バイナリファイルである' do
+    real_path = File.expand_path(Helper.join_path(TARGET_DIR, 'data', 'images', 'fig42387_05.png'))
+    @asset_compiler.send(:binary?, real_path).should be_true
+  end
+  it 'バイナリファイルでない' do
+    real_path = File.expand_path(Helper.join_path(TARGET_DIR, 'data', 'stylesheets', 'common.sass'))
+    @asset_compiler.send(:binary?, real_path).should be_false
+  end
+
   context 'ファイル名取得' do
     it '絶対パスの場合' do
       @asset_compiler.basename(Helper.join_path('/', 'absolute', 'path' , 'hoge.html')).should == 'hoge'

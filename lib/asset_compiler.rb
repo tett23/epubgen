@@ -134,7 +134,12 @@ module AssetCompiler
 
   def binary?(filename)
     s = File.read(filename, 1024)
-    s.count("^ -~\t\r\n").fdiv(s.size) > 0.3 || s.index("\x00") unless s.empty?
+
+    unless s.empty?
+      return ((s.count("^ -~\t\r\n").fdiv(s.size) > 0.3) || !(s.index("\x00").nil?))
+    else
+      return false
+    end
   end
 
   def data_path(path)
