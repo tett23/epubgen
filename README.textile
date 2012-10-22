@@ -30,13 +30,10 @@ h3. metadata.yml
 
 opfファイルのmetadata部分を書く。
 属性なし（dc:titleなど）は
-<pre>
-title: タイトル
-</pre>
+<pre>title: タイトル</pre>
 のように書ける。
 ただし、複数同じ名前で列挙する場合は、
-<pre>
-contributor:
+<pre>contributor:
   -
     attributes:
       'opf:role': aut
@@ -44,21 +41,18 @@ contributor:
   -
     attributes:
       'opf:role': ill
-    val: ふみゃらら
-</pre>
+    val</pre>
 のように書く
 
 h3. toc.yml
 
 目次を書く
-<pre>
--
+<pre>-
   name: sec 1
   ref: sec_1.html
 -
   name: sec 2
-  ref: sec_2.html
-</pre>
+  ref: sec_2.html</pre>
 のような感じ
 
 h3. data以下
