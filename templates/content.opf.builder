@@ -6,13 +6,16 @@ xml.package :version=>'2.0', :xmlns=>'http://www.idpf.org/2007/opf', :'unique-id
   xml.metadata :'xmlns:dc'=>'http://purl.org/dc/elements/1.1/', :'xmlns:opf'=>'http://www.idpf.org/2007/opf' do
     @metadata.each do |key, val|
       args = {}
-      if val.class == Hash
-        args = val[:args]
-        val = val[:value]
-      end
-
-      xml.tag! 'dc:'+key.to_s, args do |b|
-        b.text!(val.to_s)
+      if val.class == Array
+        val.each do |item|
+          xml.tag! 'dc:'+key.to_s, item['attributes'] do |b|
+            b.text! item['value']
+          end
+        end
+      else
+        xml.tag! 'dc:'+key.to_s, args do |b|
+          b.text!(val.to_s)
+        end
       end
     end
   end

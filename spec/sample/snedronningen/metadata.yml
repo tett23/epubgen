@@ -1,5 +1,8 @@
 title: 雪の女王
 author: ハンス・クリスティアン・アンデルセン　Hans Christian Andersen
 publisher: 青空文庫
-#contributor: -
-#  trl: 楠山正雄
+contributor:
+  -
+    attributes:
+      'opf:role': trl
+    value: 楠山正雄
