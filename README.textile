@@ -1,0 +1,77 @@
+h1. epubgen
+
+epubを出力できる。
+
+h2. 使い方
+
+<pre>
+e = Epubgen.new(epub化対象ディレクトリ, 出力ディレクトリ)
+e.create
+e.to_epub
+e.disporse
+</pre>
+
+disporseが抜けると、一時ファイルを削除してくれない。
+
+h2. ディレクトリ構成
+
+sample以下を参考
+
+* metadata.yml
+  タイトルや作者情報など
+* toc.yml
+  目次
+* templates.haml
+  htmlのテンプレート
+* data
+  epubのファイル本体
+
+h3. metadata.yml
+
+opfファイルのmetadata部分を書く。
+属性なし（dc:titleなど）は
+<pre>
+title: タイトル
+</pre>
+のように書ける。
+ただし、複数同じ名前で列挙する場合は、
+<pre>
+contributor:
+  -
+    attributes:
+      'opf:role': aut
+    value: ほにゃらら
+  -
+    attributes:
+      'opf:role': ill
+    val: ふみゃらら
+</pre>
+のように書く
+
+h3. toc.yml
+
+目次を書く
+<pre>
+-
+  name: sec 1
+  ref: sec_1.html
+-
+  name: sec 2
+  ref: sec_2.html
+</pre>
+のような感じ
+
+h3. data以下
+
+本文となるhtmlやcss、画像やその他ファイルを入れておく。
+現在対応している形式は、
+* textile
+* haml
+* sass
+* bundler(xml)
+その他ファイルは変換されず直接格納される
+
+h2. その他
+
+テストデータには以下を使用しています。
+http://www.aozora.gr.jp/cards/000019/card42387.html
